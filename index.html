@@ -1295,16 +1295,19 @@ border-image: linear-gradient(to right, transparent, #F86010, transparent) 50;
 .sal-video-sub{font-family:"Open Sans",Sans-serif;font-size:19px;font-weight:500;color:#6D6D6D;margin:0 0 32px}
 .sal-video-frame{position:relative;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:#00194F;border-bottom:4px solid #F86010;box-shadow:0 20px 50px rgba(0,35,100,.18)}
 .sal-video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
-.sal-video-capa{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;margin:0;cursor:pointer;background:#00194F;display:block}
+.sal-video-capa{position:absolute;inset:0;z-index:2;pointer-events:none;background:#00194F;transition:opacity .35s ease}
+.sal-video-frame.tocando .sal-video-capa,.sal-video-frame.tocando .sal-video-trava{opacity:0;visibility:hidden}
+.sal-video-trava{position:absolute;left:0;right:0;height:64px;z-index:3}
+.sal-video-trava-top{top:0}.sal-video-trava-bot{bottom:0}
 .sal-video-capa img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
 .sal-video-capa:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,25,79,0) 55%,rgba(0,25,79,.55) 100%)}
-.sal-video-capa:hover img{transform:scale(1.03)}
-.sal-video-play{position:absolute;left:28px;bottom:26px;z-index:2;display:flex;align-items:center;gap:14px;color:#fff;font-family:"Montserrat",Sans-serif;font-weight:700;font-size:18px}
+.sal-video-frame:hover .sal-video-capa img{transform:scale(1.03)}
+.sal-video-play{position:absolute;left:32px;top:50%;transform:translateY(-50%);z-index:2;display:flex;align-items:center;gap:14px;color:#fff;font-family:"Montserrat",Sans-serif;font-weight:700;font-size:18px}
 .sal-video-ico{width:68px;height:68px;border-radius:50%;background:#F86010;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(248,96,16,.45);transition:transform .25s ease,background .25s ease}
 .sal-video-ico svg{width:30px;height:30px;fill:#fff;margin-left:4px}
-.sal-video-capa:hover .sal-video-ico{transform:scale(1.08);background:#E95105}
-.sal-video-capa:focus-visible{outline:3px solid #F86010;outline-offset:3px}
-@media(max-width:767px){.sal-video{padding:50px 16px}.sal-video-tit{font-size:30px}.sal-video-sub{font-size:16px;margin-bottom:22px}.sal-video-frame{border-radius:14px}.sal-video-play{left:14px;bottom:14px;font-size:0;gap:0}.sal-video-ico{width:50px;height:50px}.sal-video-ico svg{width:22px;height:22px}}
+.sal-video-frame:hover .sal-video-ico{transform:scale(1.08);background:#E95105}
+
+@media(max-width:767px){.sal-video{padding:50px 16px}.sal-video-tit{font-size:30px}.sal-video-sub{font-size:16px;margin-bottom:22px}.sal-video-frame{border-radius:14px}.sal-video-play{left:16px;font-size:0;gap:0}.sal-video-trava{height:48px}.sal-video-ico{width:50px;height:50px}.sal-video-ico svg{width:22px;height:22px}}
 </style>
 </head>
 <body class="home wp-singular page-template page-template-elementor_canvas page page-id-7 wp-embed-responsive wp-theme-hello-elementor hello-elementor-default elementor-default elementor-template-canvas elementor-kit-6 elementor-page elementor-page-7">
@@ -2847,10 +2850,13 @@ border-image: linear-gradient(to right, transparent, #F86010, transparent) 50;
     <h2 class="sal-video-tit">Conheça o Centro Educacional Salute</h2>
     <p class="sal-video-sub">Excelência e inovação no ensino. Assista e conheça a escola onde você vai se formar.</p>
     <div class="sal-video-frame">
-      <button type="button" class="sal-video-capa" data-video="3LTmRyHvCcM" aria-label="Assistir ao vídeo: Conheça o Centro Educacional Salute">
+      <iframe id="sal-yt" src="https://www.youtube-nocookie.com/embed/3LTmRyHvCcM?rel=0&amp;playsinline=1&amp;iv_load_policy=3" title="Conheça o Centro Educacional Salute" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <div class="sal-video-capa" aria-hidden="true">
         <img src="/wp-content/uploads/2026/11/Video-Salute-Capa.jpg" width="1280" height="720" alt="" loading="lazy">
-        <span class="sal-video-play"><span class="sal-video-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span>Assista ao vídeo</span>
-      </button>
+        <span class="sal-video-play"><span class="sal-video-ico"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>Assista ao vídeo</span>
+      </div>
+      <span class="sal-video-trava sal-video-trava-top" aria-hidden="true"></span>
+      <span class="sal-video-trava sal-video-trava-bot" aria-hidden="true"></span>
     </div>
   </div>
 </section>
@@ -3020,15 +3026,13 @@ var e="script#wp-emoji-settings",t=document.querySelector(e);if(!(t instanceof H
 </script>
 <link rel='stylesheet' id='joinchat-css' href='/wp-content/plugins/creame-whatsapp-me/public/css/joinchat-btn.min.css?ver=6.4.2' media='all' />
 	<script>
-/* Video: mostra a capa da Salute; o player do YouTube so carrega e toca ao clicar (sem sair da pagina) */
-document.addEventListener('click',function(e){
-  var b=e.target.closest&&e.target.closest('.sal-video-capa'); if(!b) return;
-  var f=document.createElement('iframe');
-  f.src='https://www.youtube-nocookie.com/embed/'+b.getAttribute('data-video')+'?autoplay=1&rel=0&playsinline=1&iv_load_policy=3';
-  f.title='Conheça o Centro Educacional Salute';
-  f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-  f.referrerPolicy='strict-origin-when-cross-origin'; f.allowFullscreen=true;
-  b.replaceWith(f);
+/* Video: a capa da Salute fica por cima do player; o clique atravessa ate o YouTube (play de primeira)
+   e, quando o player recebe o clique, a capa some */
+window.addEventListener('blur',function(){
+  setTimeout(function(){
+    var f=document.getElementById('sal-yt');
+    if(f && document.activeElement===f){ f.parentNode.classList.add('tocando'); }
+  },0);
 });
 </script>
 </body>
